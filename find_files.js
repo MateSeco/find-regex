@@ -6,24 +6,16 @@ const regex = argv[2]
 const startingPath = path.resolve('.')
 
 function checkRegex (currentPath) {
-    fs.readdir(currentPath, (err, elements) => {
-        console.log('currentPath: ', currentPath)
-        if(err) console.log('err')
-        elements.forEach(elem => {
-            console.log('elem: ', elem)
-            fs.stat(elem, (err, stats) => {
-                if(err) console.log('err')
-                if (stats && stats.isFile() && elem.match(regex)) {
-                    //console.log(elem)
-                }
-                if (stats && stats.isDirectory()) {
-                    let newPath = path.resolve(elem)
-                    console.log('newPath: ', newPath)
-                    checkRegex(newPath)
-                }
-            })      
-        })
-    })
+    let files = fs.readdirSync(currentPath) 
+            files.forEach(file => {
+                let newPath = currentPath + '/' + file
+                    if (fs.statSync(newPath).isDirectory()) {
+                        checkRegex(newPath)
+                    }
+                    if (fs.statSync(newPath).isFile() && file.match(regex)) {
+                        console.log(newPath)
+                    }
+                })     
 }
 
-checkRegex(startingPath)
+checkRegex('.')
